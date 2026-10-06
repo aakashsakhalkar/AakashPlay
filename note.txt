@@ -1,0 +1,18 @@
+# ===================================================
+# AakashPlay — Official Environment Configuration
+# ===================================================
+
+# Realtime Database Endpoint (Any changes in DB reflect dynamically)
+VITE_FIREBASE_DB_URL= Stored in Secret
+
+# Store Identity & Branding
+VITE_STORE_NAME=AakashPlay
+VITE_DEVELOPER_NAME=Aakash Sakhalkar
+VITE_DEVELOPER_GITHUB=https://github.com/aakashsakhalkar
+VITE_DEVELOPER_PORTFOLIO=https://aakash-sakhalkar.web.app/
+VITE_STORE_TAGLINE=Explore, test & download Android Apps, Web Applications and Open-Source Libraries.
+VITE_STORE_VERSION=1.0.0
+
+# Dynamic Realtime Sync Settings
+VITE_ENABLE_AUTO_REFRESH=true
+VITE_POLL_INTERVAL_MS=20000

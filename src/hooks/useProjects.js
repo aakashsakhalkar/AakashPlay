@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 const FIREBASE_DB_URL = import.meta.env.VITE_FIREBASE_DB_URL || 'https://personalsharingapp.firebaseio.com/CareerHighlights/projects.json';
 const POLL_INTERVAL = Number(import.meta.env.VITE_POLL_INTERVAL_MS) || 20000;
-const CACHE_KEY = 'aakashplay_projects_cache';
+const CACHE_KEY = 'aakashplay_projects_cache_v3';
 
 const MONTHS_MAP = {
   jan: 0, january: 0,
@@ -90,12 +90,14 @@ export function useProjects() {
         const categoryLower = (item.category || '').toLowerCase();
 
         let computedType = 'web';
-        if (isApk || categoryLower.includes('android')) {
-          computedType = 'android';
-        } else if (categoryLower.includes('open source') || (!isApk && isGithub && !item.webapp.includes('.app') && !item.webapp.includes('.netlify.app'))) {
-          computedType = 'library';
-        } else if (categoryLower.includes('academic')) {
+        if (categoryLower.includes('academic') || categoryLower.includes('research') || categoryLower.includes('publication')) {
           computedType = 'academic';
+        } else if (isApk || categoryLower.includes('android')) {
+          computedType = 'android';
+        } else if (categoryLower.includes('open source') || categoryLower.includes('library') || categoryLower.includes('package') || (!isApk && isGithub && !item.webapp?.includes('.app') && !item.webapp?.includes('.netlify.app') && !item.webapp?.includes('.web.app') && !item.webapp?.includes('.vercel.app') && !item.webapp?.includes('.pages.dev') && !item.webapp?.includes('.github.io'))) {
+          computedType = 'library';
+        } else {
+          computedType = 'web';
         }
 
         const parsedTimestamp = parseProjectDate(item.date);

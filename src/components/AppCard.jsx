@@ -7,10 +7,12 @@ import {
   Smartphone, 
   Globe, 
   Package, 
-  GraduationCap
+  GraduationCap,
+  ArrowLeftRight,
+  Check
 } from 'lucide-react';
 
-export function AppCard({ project, onSelect }) {
+export function AppCard({ project, onSelect, isComparing, onToggleCompare }) {
   const [imgError, setImgError] = useState(false);
 
   const getActionConfig = () => {
@@ -61,9 +63,23 @@ export function AppCard({ project, onSelect }) {
 
   return (
     <div 
-      className="clay-app-card"
+      className={`clay-app-card ${isComparing ? 'comparing' : ''}`}
       onClick={() => onSelect(project)}
     >
+      {onToggleCompare && (
+        <button
+          className={`clay-card-compare-btn ${isComparing ? 'active' : ''}`}
+          title={isComparing ? 'Remove from comparison' : 'Add to compare (2 max)'}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleCompare(project);
+          }}
+        >
+          {isComparing ? <Check size={12} strokeWidth={3} /> : <ArrowLeftRight size={12} />}
+          <span>{isComparing ? 'Comparing' : 'Compare'}</span>
+        </button>
+      )}
+
       <div>
         <div className="app-card-top">
           <div className="clay-icon-bubble">
