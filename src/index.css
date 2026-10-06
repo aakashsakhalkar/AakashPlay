@@ -781,6 +781,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  overscroll-behavior: contain;
 }
 
 .clay-modal-container {
@@ -795,6 +796,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overscroll-behavior: contain;
 }
 
 @keyframes modalScale {
@@ -827,6 +829,7 @@ body {
   gap: 1.75rem;
   scrollbar-width: thin;
   scrollbar-color: var(--primary-glow) transparent;
+  overscroll-behavior: contain;
 }
 
 .modal-body::-webkit-scrollbar {
@@ -1185,6 +1188,7 @@ body {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--primary-glow) transparent;
+  overscroll-behavior: contain;
 }
 
 .compare-modal-body::-webkit-scrollbar {

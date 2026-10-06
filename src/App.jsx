@@ -72,6 +72,19 @@ export default function App() {
     localStorage.setItem('aakashplay_theme', theme);
   }, [theme]);
 
+  // Lock body scroll when any modal is open to prevent background scrolling
+  const isAnyModalOpen = Boolean(selectedApp || previewApp || (showCompareModal && compareList.length === 2));
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAnyModalOpen]);
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };

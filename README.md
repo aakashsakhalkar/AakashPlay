@@ -20,6 +20,7 @@ A flagship web platform inspired by the **Google Play Store & Apple App Store**,
    - [Interactive User Journey & Action Flow](#3-user-journey--sandbox-flow)
    - [Store Ecosystem & Distribution Breakdown](#4-catalog-distribution-breakdown)
    - [App Comparison State Machine](#5-side-by-side-comparison-state-lifecycle)
+   - [Modal Scroll Containment & Body Lock Flow](#6-modal-scroll-containment--isolation-lifecycle)
 3. [📊 Stored Projects & Application Catalog](#-stored-projects--application-catalog)
 4. [🛠️ Tech Stack & Design System](#️-tech-stack--design-system)
 5. [🐛 Bug Fixes & Changelog (Dated)](#-bug-fixes--changelog-dated)
@@ -40,6 +41,7 @@ A flagship web platform inspired by the **Google Play Store & Apple App Store**,
 - **⚖️ Side-by-Side App Comparison Matrix**: Floating 3D Clay dock allowing users to select any 2 applications to inspect a complete specification diff, shared vs. unique tech stacks, platform capabilities, and direct launch actions.
 - **🔢 Smart 20-Item Batch Pagination**: Clean initial 20-card load with interactive `Load More Apps` pagination displaying dynamic remainder counts (e.g., *Load Remaining 16 Apps*).
 - **🎛️ Multi-Criteria Sorting Toolbar**: Real-time catalog sorting by **Newest First (Default)**, **Oldest First**, **Alphabetical (A → Z)**, and **Most Tech-Heavy** (ranked by stack depth).
+- **🛡️ Isolated Modal Scroll Containment**: Eliminates background scroll leaking and scroll chaining using CSS `overscroll-behavior: contain` combined with dynamic document body scroll locking.
 - **🔒 100% Authentic Developer Metrics**: Zero fabricated star ratings or fake install counters. Every metric reflects true release dates, repositories, and direct binaries.
 
 ---
@@ -73,6 +75,7 @@ graph TB
         MODAL_DETAIL[Product Detail Modal + QR Engine]
         MODAL_SANDBOX[Live Web Sandbox + Viewport Switcher]
         MODAL_COMPARE[Side-by-Side Comparison Matrix]
+        SCROLL_LOCK[Body Scroll Lock & Containment Controller]
     end
 
     FB -->|JSON Poll / REST| HOOK
@@ -85,6 +88,9 @@ graph TB
     GRID --> MODAL_DETAIL
     GRID --> MODAL_SANDBOX
     GRID --> MODAL_COMPARE
+    MODAL_DETAIL -.-> SCROLL_LOCK
+    MODAL_SANDBOX -.-> SCROLL_LOCK
+    MODAL_COMPARE -.-> SCROLL_LOCK
     GH -->|Deploy on Push| NET
 ```
 
@@ -169,23 +175,36 @@ stateDiagram-v2
     ComparisonModalOpen --> [*]: Close Modal
 ```
 
+### 6. Modal Scroll Containment & Isolation Lifecycle
+```mermaid
+flowchart LR
+    A[User opens Modal Dialog] --> B[React Effect Detects Active Modal]
+    B --> C[Set document.body.style.overflow = 'hidden']
+    C --> D[Apply overscroll-behavior: contain to Modal Container & Body]
+    D --> E{User Scrolls inside Modal}
+    E -->|Scrolled to Top/Bottom Boundary| F[Scroll Momentum Contained within Modal]
+    F --> G[Background Page Remains Perfectly Stationary]
+    E -->|User Closes Modal| H[Cleanup Effect: Reset body.style.overflow = '']
+    H --> I[Default Page Scrolling Restored]
+```
+
 ---
 
 ## 📊 Stored Projects & Application Catalog
 
-AakashPlay manages a database of **76+ software projects** spanning mobile engineering, full-stack web platforms, and developer tooling:
+AakashPlay manages a database of **76+ software projects** spanning mobile engineering, full-stack web platforms, developer tooling, and research:
 
 | Category | Count | Primary Ecosystem | Key Highlights & Featured Projects |
 | :--- | :---: | :--- | :--- |
-| 📱 **Native Android Apps** | **37** | Java, Android Studio, XML, Supabase CDN | `GitaSage: Your Spiritual Mentor`, `PasswordDurg`, `Flashlight`, `EmptyAway`, `JokeVault`, `YummyCraft`, `The Recipe Rasoi`, `AS Odometer`, `BatteryUtils`, `CleanCraft` |
-| 🌐 **Web SaaS & Tools** | **19** | React.js, Next.js, Node.js, TypeScript, Netlify | `Bhagavad Gita App`, `PasswordDurg Connect`, `Tools Suite`, `Realtime Chat App`, `JSON Lens`, `ResumeCraft`, `CareerHighlights` |
-| 📦 **Open-Source Libraries** | **17** | JitPack, Java, Kotlin, NPM, React Components | Custom Android UI modules, Reusable Storage Handlers, Utility SDKs, React Component Packages |
-| 🎓 **Academic & Research** | **3** | Python, Machine Learning, Computer Vision | `Criminal Face Detection System`, `SKY Meeting App`, `Kakatkar Store Digital Solution` |
+| 📱 **Native Android Apps** | **37** | Java, Android Studio, XML, Supabase CDN, Gradle | `GitaSage: Your Spiritual Mentor`, `PasswordDurg`, `Flashlight`, `EmptyAway`, `JokeVault`, `YummyCraft`, `The Recipe Rasoi`, `AS Odometer`, `BatteryUtils`, `CleanCraft`, `TorchLightPro`, `QuickNotes` |
+| 🌐 **Web SaaS & Tools** | **19** | React.js, Next.js, Node.js, TypeScript, Netlify, Tailwind/CSS | `Bhagavad Gita App`, `PasswordDurg Connect`, `Tools Suite`, `Realtime Chat App`, `JSON Lens`, `ResumeCraft`, `CareerHighlights`, `DevPortfolio` |
+| 📦 **Open-Source Libraries** | **17** | JitPack, Java, Kotlin, NPM, React Components | Custom Android UI modules, Reusable Storage Handlers, Utility SDKs, React Component Packages, Crypto Utils |
+| 🎓 **Academic & Research** | **3** | Python, Machine Learning, Computer Vision, TensorFlow | `Criminal Face Detection System`, `SKY Meeting App`, `Kakatkar Store Digital Solution` |
 
 ### 🛠️ Core Technology Stack Distribution in Catalog
-- **Mobile Development**: Android Studio (52+ projects), Java (46+ projects), XML Layouts (36+ projects)
+- **Mobile Engineering**: Android Studio (52+ projects), Java (46+ projects), XML Layouts (36+ projects), Gradle
 - **Web & Full-Stack**: React.js / Next.js (22+ projects), TypeScript & JavaScript (34+ projects), Node.js (16+ projects)
-- **Cloud & Hosting**: Firebase Realtime DB (22+ projects), JitPack Distribution (13+ projects), Netlify (6+ projects), Supabase CDN
+- **Cloud & Infrastructure**: Firebase Realtime DB (22+ projects), JitPack Distribution (13+ projects), Netlify Edge (6+ projects), Supabase CDN
 
 ---
 
@@ -224,6 +243,9 @@ AakashPlay manages a database of **76+ software projects** spanning mobile engin
 ### 📅 October 6, 2026
 
 #### ✨ Added Features & Enhancements
+- **Isolated Modal Scroll Containment & Body Scroll Lock**:
+  - Integrated `overscroll-behavior: contain` across `.modal-overlay`, `.clay-modal-container`, `.modal-body`, and `.compare-modal-body`.
+  - Added a reactive `useEffect` lifecycle hook in `App.jsx` that sets `document.body.style.overflow = 'hidden'` when any modal dialog is active, preventing background scroll leaking.
 - **Side-by-Side App Comparison Matrix (`<AppComparisonModal />`)**:
   - Integrated a toggle comparison chip on all catalog cards.
   - Developed a persistent floating 3D Clay dock indicating selected items with quick-launch trigger (`Compare Now 2/2`).
@@ -246,6 +268,8 @@ AakashPlay manages a database of **76+ software projects** spanning mobile engin
   - Added direct-to-device QR codes rendered via `qrcode.react` in modal views.
 
 #### 🛠️ Bug Fixes & Optimizations
+- **Fixed Modal Background Scroll Leaking & Scroll Chaining**:
+  - Resolved issue where scrolling to the bottom or top of a modal passed scroll events into the main storefront page.
 - **Fixed Web Sandbox Layout & Interaction Blockers**:
   - Eliminated overlapping background gradient blobs that obstructed clicks inside sandbox iframes.
 - **Stabilized 3D Card Hover & Tilt Physics**:
@@ -310,13 +334,7 @@ cd AakashPlay
 # 2. Install dependencies
 npm install
 
-# 3. Verify .env configuration
-# VITE_FIREBASE_DB_URL=https://personalsharingapp.firebaseio.com/CareerHighlights/projects.json
-# VITE_STORE_NAME=AakashPlay
-# VITE_ENABLE_AUTO_REFRESH=true
-# VITE_POLL_INTERVAL_MS=20000
-
-# 4. Start local development server
+# 3. Start local development server
 npm run dev
 ```
 
